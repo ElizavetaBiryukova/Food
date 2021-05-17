@@ -1,5 +1,7 @@
 window.addEventListener('DOMContentLoaded', () => {
 
+    //Tabs
+
     let tabs = document.querySelectorAll('.tabheader__item'),
         tabsContent = document.querySelectorAll('.tabcontent'),
         tabsParent = document.querySelector('.tabheader__items');
@@ -37,6 +39,19 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Timer
+
+    const deadline = '2020-05-17';
+
+    //Функция определяет разницу между дедлайном и текущим временем
+
+    function getTimeRemaining(endtime) {
+        const t = Date.parse(endtime) - Date.parse(new Date()),
+            days = Math.floor(t / (1000 * 60 * 60 * 24)),
+            hours = Math.floor((t / (1000 * 60 * 60) % 24)),
+            minutes = Math.floor((t / 1000 / 60) % 60),
+            seconds = Math.floor((t / 1000) % 60);
+    }
 
 
 
