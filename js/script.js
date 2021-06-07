@@ -112,6 +112,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const modalOpen = document.querySelectorAll('[data-modal]');
     const modalClose = document.querySelector('[data-close]');
     const modal = document.querySelector('.modal');
+   
 
     const openModal = () => {
         modal.classList.add('show');
@@ -120,6 +121,8 @@ window.addEventListener('DOMContentLoaded', () => {
         clearInterval(modalTimerId);
     };
 
+    const modalTimerId = setTimeout(openModal, 6000);
+    
     modalOpen.forEach(btn => {
         btn.addEventListener('click', openModal);
     });
@@ -144,7 +147,6 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // const modalTimerId = setTimeout(openModal, 6000);
 
     const showModalByScroll = () => {
         if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
@@ -158,12 +160,13 @@ window.addEventListener('DOMContentLoaded', () => {
     //Карточки с меню
 
     class CardMenu {
-        constructor(src, alt, title, text, price, parentSelector) {
+        constructor(src, alt, title, text, price, parentSelector, ...classes) {
             this.src = src;
             this.alt = alt;
             this.title = title;
             this.text = text;
             this.price = price;
+            this.classes = classes;
             this.transfer = 75;
             this.changeToRUB();
             this.parent = document.querySelector(parentSelector);
@@ -175,8 +178,13 @@ window.addEventListener('DOMContentLoaded', () => {
 
         render() {
             const element = document.createElement('div');
+            if (this.classes.length === 0) {
+                this.classes = 'menu__item';
+                element.classList.add(this.classes);
+            } else {
+                this.classes.forEach(className => element.classList.add(className));
+            }
             element.innerHTML = `
-            <div class="menu__item">
             <img src=${this.src} alt=${this.alt}>
             <h3 class="menu__item-subtitle">${this.title}</h3>
             <div class="menu__item-descr">${this.text}</div>
@@ -184,7 +192,6 @@ window.addEventListener('DOMContentLoaded', () => {
             <div class="menu__item-price">
                 <div class="menu__item-cost">Цена:</div>
                 <div class="menu__item-total"><span>${this.price}</span> руб/день</div>
-            </div>
             </div>
             `;
             this.parent.append(element);
@@ -198,6 +205,7 @@ window.addEventListener('DOMContentLoaded', () => {
         'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
         9,
         '.menu .container'
+
     ).render();
 
     new CardMenu(
@@ -207,6 +215,7 @@ window.addEventListener('DOMContentLoaded', () => {
         'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
         20,
         '.menu .container'
+
     ).render();
 
     new CardMenu(
@@ -216,8 +225,51 @@ window.addEventListener('DOMContentLoaded', () => {
         'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков. ',
         14,
         '.menu .container'
+
     ).render();
 
+    //Forms
+
+    const forms = document.querySelectorAll('form');
+
+    const message = {
+        loading: 'Загрузка',
+        success: 'Спасибо! Скоро мы с вами свяжемся',
+        failure: 'Что-то пошло не так...'
+    };
+
+    forms.forEach(item => {
+        postData(item);
+    });
+
+    function postData(form) {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            let statusMessage = document.createElement('div');
+            statusMessage.classList.add('status');
+            statusMessage.textContent = message.loading;
+            form.append(statusMessage);
+
+            const request = new XMLHttpRequest();
+            request.open('POST', 'server.php');
+
+            request.setRequestHeader('Content-type', 'multipart/form-data');
+            const formData = new FormData(form);
+
+            request.send(formData);
+
+            request.addEventListener('load', () => {
+                if (request.status === 200) {
+                    console.log(request.response);
+                    statusMessage.textContent = message.success;
+
+                } else {
+                    statusMessage.textContent = message.failure;
+                }
+            });
+        });
+    }
 
 
 
